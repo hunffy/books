@@ -19,10 +19,6 @@ const BooksPage: React.FC = () => {
   const [title, setTitle] = useState<string>("");
   const [writer, setWriter] = useState<string>("");
 
-  //페이지네이션
-  const [currentPage, setCurrentPage] = useState(1); //현재 페이지
-  const booksPerPage = 10; //한 페이지 당 항목 수
-
   useEffect(() => {
     const fetchBooks = async () => {
       try {
@@ -78,11 +74,16 @@ const BooksPage: React.FC = () => {
     }
   };
 
-  //페이지 당 데이터 계산
-  const indexOfLastBook = currentPage * booksPerPage;
-  const indexOfFirstBook = indexOfLastBook - booksPerPage;
-  const currentBooks = searchResults.slice(indexOfFirstBook, indexOfLastBook);
+  //페이지네이션
+  const [currentPage, setCurrentPage] = useState(1); //현재 페이지
+  const booksPerPage = 10; //한 페이지 당 항목 수
 
+  //페이지 당 데이터 계산
+  const indexOfLastBook = currentPage * booksPerPage; // 현재페이지(2) * 10 = 20.
+  const indexOfFirstBook = indexOfLastBook - booksPerPage; // 20- 10 =10
+  const currentBooks = searchResults.slice(indexOfFirstBook, indexOfLastBook); //10,20 => 10~19인덱스 데이터를 화면에보여줌
+
+  //전체페이지 계산 나눈 값 올림
   const totalPages = Math.ceil(searchResults.length / booksPerPage);
   return (
     <div>
