@@ -85,6 +85,8 @@ const BooksPage: React.FC = () => {
 
   //전체페이지 계산 나눈 값 올림
   const totalPages = Math.ceil(searchResults.length / booksPerPage);
+
+  useEffect(() => {}, [currentBooks]);
   return (
     <div>
       <Title>BookStore</Title>
