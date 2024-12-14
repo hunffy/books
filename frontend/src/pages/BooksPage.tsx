@@ -15,6 +15,8 @@ const BooksPage: React.FC = () => {
   const [books, setBooks] = useState<Book[]>([]);
   const [searchResults, setSearchResults] = useState<Book[]>([]);
   const [inputValue, setInputValue] = useState<string>("");
+  const [title, setTitle] = useState<string>("");
+  const [writer, setWriter] = useState<string>("");
 
   useEffect(() => {
     const fetchBooks = async () => {
@@ -27,7 +29,7 @@ const BooksPage: React.FC = () => {
       }
     };
     fetchBooks();
-  }, []);
+  }, [books]);
 
   const handleSearch = () => {
     if (inputValue.trim() === "") {
@@ -48,6 +50,26 @@ const BooksPage: React.FC = () => {
     navigate(`/detail/${book.id}`);
   };
 
+  const handleAdd = async () => {
+    if (!title || !writer) {
+      return alert("제목과 저자를 입력하세요");
+    }
+
+    try {
+      const newBook = {
+        title,
+        writer,
+      };
+      const response = await axios.post(
+        "http://localhost:8000/api/books",
+        newBook
+      );
+      console.log("post response", response);
+    } catch (err) {
+      console.error(err);
+    }
+  };
+
   return (
     <div>
       <Title>BookStore</Title>
@@ -57,7 +79,21 @@ const BooksPage: React.FC = () => {
           setInputValue={setInputValue}
           onSearch={handleSearch}
         />
-        <AddBox>추가</AddBox>
+        <AddWrapper>
+          <InputWrapper>
+            <TitleInput
+              placeholder="제목을 입력하세요"
+              value={title}
+              onChange={(e) => setTitle(e.target.value)}
+            />
+            <WriterInput
+              placeholder="저자를 입력하세요"
+              value={writer}
+              onChange={(e) => setWriter(e.target.value)}
+            />
+          </InputWrapper>
+          <AddButton onClick={handleAdd}>추가</AddButton>
+        </AddWrapper>
       </HeadWrapper>
       <BookList books={searchResults} onSelectBook={handleSelectBook} />
     </div>
@@ -65,6 +101,7 @@ const BooksPage: React.FC = () => {
 };
 const HeadWrapper = styled.div`
   display: flex;
+  flex-direction: column;
   justify-content: center;
   align-items: center;
 `;
@@ -74,7 +111,30 @@ const Title = styled.h1`
   font-weight: bold;
 `;
 
-const AddBox = styled.button`
+const AddWrapper = styled.div`
+  display: flex;
+  margin-top: 10px;
+  align-items: center;
+`;
+
+const InputWrapper = styled.div`
+  display: flex;
+  flex-direction: column;
+`;
+
+const TitleInput = styled.input`
+  height: 30px;
+  width: 250px;
+  font-size: 20px;
+`;
+
+const WriterInput = styled.input`
+  height: 30px;
+  width: 250px;
+  font-size: 20px;
+`;
+
+const AddButton = styled.button`
   cursor: pointer;
   height: 30px;
   width: 100px;
