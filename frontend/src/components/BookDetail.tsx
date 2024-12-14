@@ -1,7 +1,8 @@
 import React, { useEffect, useState } from "react";
 import { useParams } from "react-router-dom";
 import axios from "axios";
-
+import styled from "styled-components";
+import { useNavigate } from "react-router-dom";
 type Book = {
   id: number;
   title: string;
@@ -11,6 +12,19 @@ type Book = {
 const BookDetail: React.FC = () => {
   const { id } = useParams<{ id: string }>();
   const [book, setBook] = useState<Book | null>(null);
+  const navigate = useNavigate();
+  const handleDelete = async () => {
+    try {
+      const response = await axios.delete(
+        `http://localhost:8000/api/books/${id}`
+      );
+      console.log(response);
+      alert("정상적으로 삭제되었습니다.");
+      navigate("/");
+    } catch (err) {
+      console.error(err);
+    }
+  };
 
   useEffect(() => {
     const fetchBook = async () => {
@@ -29,11 +43,30 @@ const BookDetail: React.FC = () => {
     return <div>데이터를 불러오는 중입니다..</div>;
   }
   return (
-    <div>
+    <DetailWrapper>
       <div>제목 : {book.title}</div>
       <div>저자 : {book.writer}</div>
-    </div>
+      <ButtonWrapper>
+        <UpdateButton>수정</UpdateButton>
+        <DeleteButton onClick={handleDelete}>삭제</DeleteButton>
+      </ButtonWrapper>
+    </DetailWrapper>
   );
 };
+
+const DetailWrapper = styled.div`
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  align-items: center;
+`;
+
+const ButtonWrapper = styled.div`
+  display: flex;
+  margin-top: 20px;
+`;
+
+const UpdateButton = styled.button``;
+const DeleteButton = styled.button``;
 
 export default BookDetail;

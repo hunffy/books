@@ -65,6 +65,8 @@ const BooksPage: React.FC = () => {
         newBook
       );
       console.log("post response", response);
+      setTitle("");
+      setWriter("");
     } catch (err) {
       console.error(err);
     }
