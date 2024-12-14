@@ -4,6 +4,7 @@ import BookList from "../components/BookList.tsx";
 import SearchBox from "../components/SearchBox.tsx";
 import { useNavigate } from "react-router-dom";
 import styled from "styled-components";
+import { Pagination } from "@mui/material";
 type Book = {
   id: number;
   title: string;
@@ -17,6 +18,10 @@ const BooksPage: React.FC = () => {
   const [inputValue, setInputValue] = useState<string>("");
   const [title, setTitle] = useState<string>("");
   const [writer, setWriter] = useState<string>("");
+
+  //페이지네이션
+  const [currentPage, setCurrentPage] = useState(1); //현재 페이지
+  const booksPerPage = 10; //한 페이지 당 항목 수
 
   useEffect(() => {
     const fetchBooks = async () => {
@@ -44,6 +49,7 @@ const BooksPage: React.FC = () => {
     );
 
     setSearchResults(filteredBooks);
+    setCurrentPage(1);
   };
 
   const handleSelectBook = (book: { id: number }) => {
@@ -72,6 +78,12 @@ const BooksPage: React.FC = () => {
     }
   };
 
+  //페이지 당 데이터 계산
+  const indexOfLastBook = currentPage * booksPerPage;
+  const indexOfFirstBook = indexOfLastBook - booksPerPage;
+  const currentBooks = searchResults.slice(indexOfFirstBook, indexOfLastBook);
+
+  const totalPages = Math.ceil(searchResults.length / booksPerPage);
   return (
     <div>
       <Title>BookStore</Title>
@@ -97,7 +109,16 @@ const BooksPage: React.FC = () => {
           <AddButton onClick={handleAdd}>추가</AddButton>
         </AddWrapper>
       </HeadWrapper>
-      <BookList books={searchResults} onSelectBook={handleSelectBook} />
+      <BookList books={currentBooks} onSelectBook={handleSelectBook} />
+      <PaginationWrapper>
+        <Pagination
+          count={totalPages}
+          page={currentPage}
+          onChange={(e, value) => setCurrentPage(value)}
+          color="primary"
+          size="large"
+        />
+      </PaginationWrapper>
     </div>
   );
 };
@@ -141,6 +162,12 @@ const AddButton = styled.button`
   height: 30px;
   width: 100px;
   margin-left: 10px;
+`;
+
+const PaginationWrapper = styled.div`
+  display: flex;
+  justify-content: center;
+  margin-top: 20px;
 `;
 
 export default BooksPage;
