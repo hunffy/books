@@ -24,28 +24,28 @@ const BooksPage: React.FC = () => {
       try {
         const res = await axios.get("http://localhost:8000/api/books");
         setBooks(res.data);
-        setSearchResults(res.data);
+        setSearchResults(res.data); // 초기 검색 결과 설정
       } catch (err) {
         console.error(err);
       }
     };
     fetchBooks();
-  }, [books]);
+  }, []);
 
   const handleSearch = () => {
     if (inputValue.trim() === "") {
-      setSearchResults(books);
+      setSearchResults(books); // 검색어가 없으면 전체 책 목록 표시
       return;
     }
 
     const filteredBooks = books.filter(
-      (book: Book) =>
+      (book) =>
         book.title.toLowerCase().includes(inputValue.toLowerCase()) ||
         book.writer.toLowerCase().includes(inputValue.toLowerCase())
     );
 
-    setSearchResults(filteredBooks);
-    setCurrentPage(1);
+    setSearchResults(filteredBooks); // 검색 결과 업데이트
+    setCurrentPage(1); // 페이지 초기화
   };
 
   const handleSelectBook = (book: { id: number }) => {
@@ -58,15 +58,19 @@ const BooksPage: React.FC = () => {
     }
 
     try {
-      const newBook = {
-        title,
-        writer,
-      };
+      const newBook = { title, writer };
+
       const response = await axios.post(
         "http://localhost:8000/api/books",
         newBook
       );
-      console.log("post response", response);
+
+      const addedBook = response.data;
+
+      // books와 searchResults에 새 책 추가
+      setBooks((prevBooks) => [...prevBooks, addedBook]);
+      setSearchResults((prevResults) => [...prevResults, addedBook]);
+
       setTitle("");
       setWriter("");
     } catch (err) {
@@ -89,7 +93,7 @@ const BooksPage: React.FC = () => {
   useEffect(() => {}, [currentBooks]);
   return (
     <div>
-      <Title>BookStore</Title>
+      <Title onClick={() => navigate("/")}>BookStore</Title>
       <HeadWrapper>
         <SearchBox
           inputValue={inputValue}
@@ -135,6 +139,7 @@ const HeadWrapper = styled.div`
 const Title = styled.h1`
   font-size: 40px;
   font-weight: bold;
+  cursor: pointer;
 `;
 
 const AddWrapper = styled.div`
