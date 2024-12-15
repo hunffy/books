@@ -3,6 +3,7 @@ import { useParams } from "react-router-dom";
 import axios from "axios";
 import styled from "styled-components";
 import { useNavigate } from "react-router-dom";
+import BookUpdate from "./BookUpdate.tsx";
 type Book = {
   id: number;
   title: string;
@@ -12,6 +13,7 @@ type Book = {
 const BookDetail: React.FC = () => {
   const { id } = useParams<{ id: string }>();
   const [book, setBook] = useState<Book | null>(null);
+  const [onUpdate, setOnUpdate] = useState<boolean>(false);
   const navigate = useNavigate();
   const handleDelete = async () => {
     try {
@@ -43,16 +45,32 @@ const BookDetail: React.FC = () => {
     return <div>데이터를 불러오는 중입니다..</div>;
   }
   return (
-    <DetailWrapper>
-      <div>제목 : {book.title}</div>
-      <div>저자 : {book.writer}</div>
-      <ButtonWrapper>
-        <UpdateButton>수정</UpdateButton>
-        <DeleteButton onClick={handleDelete}>삭제</DeleteButton>
-      </ButtonWrapper>
-    </DetailWrapper>
+    <Detail>
+      {!onUpdate ? (
+        <DetailWrapper>
+          <div>제목 : {book.title}</div>
+          <div>저자 : {book.writer}</div>
+          <ButtonWrapper>
+            <UpdateButton onClick={() => setOnUpdate(true)}>수정</UpdateButton>
+            <DeleteButton onClick={handleDelete}>삭제</DeleteButton>
+          </ButtonWrapper>
+        </DetailWrapper>
+      ) : (
+        <BookUpdate
+          title={book.title}
+          writer={book.writer}
+          offUpdate={() => setOnUpdate(false)}
+        />
+      )}
+    </Detail>
   );
 };
+
+const Detail = styled.div`
+  display: flex;
+  justify-content: center;
+  align-items: center;
+`;
 
 const DetailWrapper = styled.div`
   display: flex;
